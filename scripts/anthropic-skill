@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# anthropic-skill — add a command from the Anthropic skills repo into your project.
+#
+# Usage:
+#   anthropic-skill list
+#   anthropic-skill add <skill-name>
+#   anthropic-skill remove <skill-name>
+#
+# Examples:
+#   anthropic-skill add code-review
+#   anthropic-skill remove code-review
+#   anthropic-skill list
+
+REPO="anthropics/skills"
+BRANCH="main"
+SKILLS_PATH="skills"
+API_BASE="https://api.github.com/repos/${REPO}/contents/${SKILLS_PATH}"
+
+# Resolve the .claude/agent-configs/ directory relative to this script's location.
+# This script lives at .claude/agent-configs/scripts/, so .claude/agent-configs/ is one level up.
+AGENT_CONFIGS_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+COMMANDS_DIR="${AGENT_CONFIGS_DIR}/commands"
+
+list_skills() {
+  echo "Available skills from ${REPO}:"
+  echo ""
+
+  curl -sL "${API_BASE}?ref=${BRANCH}" \
+    | grep -o '"name": "[^"]*"' \
+    | sed 's/"name": "//;s/"//' \
+    | while read -r name; do echo "  $name"; done
+}
+
+add_skill() {
+  local skill_name="$1"
+  local target_file="${COMMANDS_DIR}/${skill_name}.md"
+
+  if [[ -f "$target_file" ]]; then
+    echo "Command '${skill_name}' already exists at ${target_file}" >&2
+    read -rp "Overwrite? [y/N] " confirm
+    if [[ "$confirm" != [yY] ]]; then
+      echo "Aborted."
+      exit 0
+    fi
+  fi
+
+  echo "adding '${skill_name}' from ${REPO}..."
+
+  # Download SKILL.md via GitHub API
+  local api_url="${API_BASE}/${skill_name}/SKILL.md?ref=${BRANCH}"
+  local file_info
+  file_info="$(curl -sL "$api_url")"
+
+  # Check if the skill exists
+  if echo "$file_info" | grep -q '"message": "Not Found"'; then
+    echo "Error: Skill '${skill_name}' not found in ${REPO}." >&2
+    echo "" >&2
+    echo "Run 'anthropic-skill list' to see available skills." >&2
+    exit 1
+  fi
+
+  local download_url
+  download_url="$(echo "$file_info" | grep -o '"download_url": "[^"]*"' | sed 's/"download_url": "//;s/"//')"
+
+  mkdir -p "$COMMANDS_DIR"
+
+  # Download and strip the 'license:' frontmatter field (not used by Claude Code)
+  curl -sL "$download_url" \
+    | sed '/^license:/d' \
+    > "$target_file"
+
+  echo ""
+  echo "Done. Added '${skill_name}' as ${target_file}"
+  echo "To use it: ln -s ../agent-configs/commands/${skill_name}.md .claude/commands/${skill_name}.md"
+}
+
+remove_skill() {
+  local skill_name="$1"
+  local target_file="${COMMANDS_DIR}/${skill_name}.md"
+
+  if [[ -f "$target_file" ]]; then
+    read -rp "Are you sure you want to remove the ${skill_name} command? [y/N] " confirm
+    if [[ "$confirm" != [yY] ]]; then
+      echo "Aborted."
+      exit 0
+    fi
+    rm -f "$target_file"
+    echo "${skill_name} was removed successfully"
+    exit 0
+  else
+    echo "No command was found with that name"
+    exit 0
+  fi
+}
+
+# --- Main ---
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: anthropic-skill <command> [args]"
+  echo "Commands: list, add, remove"
+  exit 1
+fi
+
+case "$1" in
+  add)
+    add_skill "$2"
+    ;;
+  remove)
+    remove_skill "$2"
+    ;;
+  list)
+    list_skills
+    ;;
+  help|--help|-h)
+    echo "Usage: anthropic-skill <command> [args]"
+    echo ""
+    echo "Add or remove commands from the Anthropic skills repo into your project's commands/ directory."
+    echo "Skills are downloaded as single .md files compatible with Claude Code slash commands."
+    echo ""
+    echo "Commands:"
+    echo "  list               List available skills from ${REPO}"
+    echo "  add <name>         Add a command to commands/"
+    echo "  remove <name>      Remove a command from commands/"
+    ;;
+  -*)
+    echo "Unknown option: $1" >&2
+    exit 1
+    ;;
+esac
