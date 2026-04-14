@@ -88,4 +88,3 @@ You are reading a shared Claude Code configuration repository. Here is how to us
 
 1. **Always apply** the content from `rules/core-identity.md` and `rules/core-conventions.md` — these define baseline behaviour and coding standards.
 2. **Commands** in `commands/` are slash commands. Each `.md` file is one command; its filename is the invocation name (e.g. `frontend-design.md` → `/frontend-design`).
-3. **Respect project-local overrides** — if the project has its own `.claude/CLAUDE.md` entries or `.claude/commands/` files that conflict with these shared rules, prefer those.
