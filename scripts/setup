@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# setup.sh — Wire this repo into ~/.claude/ and add shell aliases.
+#
+# For users keeping this repo outside ~/.claude/ (e.g. ~/code/agent-configs/).
+# If you cloned directly to ~/.claude/, this script is not needed.
+#
+# Usage: ./scripts/setup.sh
+
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+CLAUDE_DIR="$HOME/.claude"
+FISH_CONFIG="$HOME/.config/fish/config.fish"
+
+mkdir -p "$CLAUDE_DIR"
+
+link_target() {
+  local target="$1"
+  local link="$2"
+  local label="${link/#$HOME/~}"
+
+  if [[ -L "$link" && "$(readlink "$link")" == "$target" ]]; then
+    echo "  $label already linked, skipping."
+  elif [[ -L "$link" ]]; then
+    read -rp "  $label is a symlink pointing elsewhere. Overwrite? [y/N] " confirm
+    [[ "$confirm" == [yY] ]] || { echo "  Skipped."; return 0; }
+    rm -f "$link"
+    ln -s "$target" "$link"
+    echo "  Linked: $label -> $target"
+  elif [[ -e "$link" ]]; then
+    read -rp "  $label exists and is not a symlink. Overwrite? [y/N] " confirm
+    [[ "$confirm" == [yY] ]] || { echo "  Skipped."; return 0; }
+    rm -rf "$link"
+    ln -s "$target" "$link"
+    echo "  Linked: $label -> $target"
+  else
+    ln -s "$target" "$link"
+    echo "  Linked: $label -> $target"
+  fi
+}
+
+echo "Setting up ~/.claude/ links..."
+link_target "${REPO_DIR}/CLAUDE.md" "${CLAUDE_DIR}/CLAUDE.md"
+link_target "${REPO_DIR}/rules" "${CLAUDE_DIR}/rules"
+link_target "${REPO_DIR}/commands" "${CLAUDE_DIR}/commands"
+
+echo ""
+echo "Setting up shell aliases..."
+
+add_fish_alias() {
+  local name="$1"
+  local target="$2"
+  local line="alias ${name}='${target}'"
+
+  if grep -qF "$line" "$FISH_CONFIG" 2>/dev/null; then
+    echo "  alias ${name} already set, skipping."
+  else
+    printf '\n%s\n' "$line" >> "$FISH_CONFIG"
+    echo "  Added alias: ${name}"
+  fi
+}
+
+add_fish_alias "claude-skill" "${REPO_DIR}/scripts/claude-skill"
+
+echo ""
+echo "Done. Run: source ~/.config/fish/config.fish"

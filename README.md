@@ -6,67 +6,70 @@ My personal Claude Code configuration pack, providing shared rules and commands 
 
 - `CLAUDE.md` — root entry point; imports core rules
 - `rules/` — markdown rule files loaded via `@` imports in `CLAUDE.md`
-- `commands/` — Claude Code slash commands (one `.md` file per command)
-- `scripts/anthropic-skill` — installer for pulling commands from the [Anthropic skills repo](https://github.com/anthropics/skills)
+- `commands/` — Claude Code slash commands (gitignored; install via skill scripts below)
+- `scripts/anthropic-skill` — install commands from the [Anthropic skills repo](https://github.com/anthropics/skills)
+- `scripts/matt-skill` — install commands from the [Matt Pocock skills repo](https://github.com/mattpocock/skills)
 
 ---
 
 ## Installation
 
-Add as a git submodule at `.claude/` in any project:
+### Option A: Clone to `~/.claude/` (recommended)
+
+Claude Code automatically loads `~/.claude/CLAUDE.md` and discovers slash commands from `~/.claude/commands/`.
 
 ```bash
-git submodule add <repo-url> .claude
+git clone <repo-url> ~/.claude
 ```
 
-Claude Code will automatically load `.claude/CLAUDE.md` and discover slash commands from `.claude/commands/`.
+No further setup needed.
 
-For project-specific instructions, add a `CLAUDE.md` at the project root — Claude Code reads both.
+### Option B: Clone anywhere, then symlink
 
----
-
-## Adding commands from the Anthropic skills repo
-
-Use the bundled installer to pull commands from the [Anthropic skills repo](https://github.com/anthropics/skills).
-
-**Set up an alias (recommended)**
+If you prefer to keep all your repos in one place (e.g. `~/code/`):
 
 ```bash
-./scripts/setup-alias.sh
+git clone <repo-url> ~/code/agent-configs
+~/code/agent-configs/scripts/setup
 source ~/.config/fish/config.fish
 ```
 
-Then:
+`setup.sh` creates symlinks from `~/.claude/` into the repo and adds shell aliases for the skill scripts.
+
+---
+
+## Installing skills
+
+Slash commands are not committed to this repo — they are installed artifacts. Use the skill scripts to populate `commands/` after cloning.
+
+Both scripts try the Claude Code plugin system first (`claude plugin marketplace add` + `claude plugin install`) and fall back to a direct GitHub download if the plugin system is unavailable.
 
 ```bash
 # List available skills
-anthropic-skill list
+claude-skill --registry=anthropic list
+claude-skill --registry=mattpocock list   # grouped by category
 
-# Install a command into this repo's commands/ directory
-anthropic-skill add code-review
+# Install a skill into commands/
+claude-skill --registry=anthropic add code-review
+claude-skill --registry=mattpocock add tdd
 
-# Remove a command
-anthropic-skill remove code-review
+# Remove a skill
+claude-skill --registry=anthropic remove code-review
+claude-skill --registry=mattpocock remove tdd
 ```
 
-**Or use the script directly**
+Or run the scripts directly without the alias:
 
 ```bash
-./scripts/anthropic-skill list
-./scripts/anthropic-skill add code-review
-./scripts/anthropic-skill remove code-review
+./scripts/claude-skill --registry=anthropic list
+./scripts/claude-skill --registry=mattpocock add tdd
 ```
 
 ---
 
-## Creating custom commands locally
+## Creating custom commands
 
-Add a `.md` file to `commands/` with a `description:` frontmatter field:
-
-```
-commands/
-└── my-command.md
-```
+Add a `.md` file to `commands/` with a `description:` frontmatter field. Because `commands/` is gitignored, custom commands live only on your machine — they are not committed.
 
 ```markdown
 ---
@@ -79,12 +82,3 @@ Instructions go here.
 ```
 
 Invoke it in Claude Code as `/my-command`.
-
----
-
-## For Agents
-
-You are reading a shared Claude Code configuration repository. Here is how to use it:
-
-1. **Always apply** the content from `rules/core-identity.md` and `rules/core-conventions.md` — these define baseline behaviour and coding standards.
-2. **Commands** in `commands/` are slash commands. Each `.md` file is one command; its filename is the invocation name (e.g. `frontend-design.md` → `/frontend-design`).
