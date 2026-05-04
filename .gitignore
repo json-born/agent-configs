@@ -4,4 +4,3 @@ memory/
 plans/
 todos/
 commands/*
-!commands/commit.md
