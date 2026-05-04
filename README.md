@@ -6,9 +6,9 @@ My personal Claude Code configuration pack, providing shared rules and commands 
 
 - `CLAUDE.md` — root entry point; imports core rules
 - `rules/` — markdown rule files loaded via `@` imports in `CLAUDE.md`
-- `commands/` — Claude Code slash commands (gitignored; install via skill scripts below)
-- `scripts/anthropic-skill` — install commands from the [Anthropic skills repo](https://github.com/anthropics/skills)
-- `scripts/matt-skill` — install commands from the [Matt Pocock skills repo](https://github.com/mattpocock/skills)
+- `commands/` — Claude Code slash commands (contents gitignored; install via skill scripts below)
+- `scripts/claude-skill` — unified skill installer with `--registry=` flag
+- `scripts/registries/` — per-registry adapter scripts (anthropic, mattpocock)
 
 ---
 
@@ -34,7 +34,7 @@ git clone <repo-url> ~/code/agent-configs
 source ~/.config/fish/config.fish
 ```
 
-`setup.sh` creates symlinks from `~/.claude/` into the repo and adds shell aliases for the skill scripts.
+`setup` creates symlinks from `~/.claude/` into the repo and adds a shell alias for `claude-skill`.
 
 ---
 
