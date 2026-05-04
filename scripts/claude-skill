@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# claude-skill — install commands from skill repos.
+#
+# Usage:
+#   claude-skill --registry=<source> <command> [args]
+#
+# Registries:
+#   anthropic    github.com/anthropics/skills
+#   mattpocock   github.com/mattpocock/skills
+#
+# Examples:
+#   claude-skill --registry=anthropic list
+#   claude-skill --registry=anthropic add code-review
+#   claude-skill --registry=mattpocock list
+#   claude-skill --registry=mattpocock add tdd
+#   claude-skill --registry=mattpocock remove tdd
+
+SCRIPT_DIR="$(dirname "$0")"
+REGISTRY=""
+
+for arg in "$@"; do
+  case "$arg" in
+    --registry=*)
+      REGISTRY="${arg#--registry=}"
+      shift
+      break
+      ;;
+  esac
+  break
+done
+
+if [[ -z "$REGISTRY" ]]; then
+  echo "Usage: claude-skill --registry=<source> <command> [args]" >&2
+  echo "Registries: anthropic, mattpocock" >&2
+  exit 1
+fi
+
+case "$REGISTRY" in
+  anthropic)
+    exec "${SCRIPT_DIR}/registries/anthropic-skill" "$@"
+    ;;
+  mattpocock)
+    exec "${SCRIPT_DIR}/registries/mattpocock-skill" "$@"
+    ;;
+  *)
+    echo "Unknown registry: ${REGISTRY}" >&2
+    echo "Registries: anthropic, mattpocock" >&2
+    exit 1
+    ;;
+esac

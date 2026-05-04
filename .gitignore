@@ -3,3 +3,5 @@ settings.local.json
 memory/
 plans/
 todos/
+commands/*
+!commands/commit.md
