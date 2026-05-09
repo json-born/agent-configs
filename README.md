@@ -4,9 +4,9 @@ My personal Claude Code configuration pack, providing shared rules and commands 
 
 ## What this repo provides
 
-- `CLAUDE.md` root entry point; imports core rules and pinned skills
-- `rules/` markdown rule files loaded via `@` imports in `CLAUDE.md`
-- `skills-lock.json` skills.sh lock file; tracks installed skills across machines
+- `CLAUDE.md` - root entry point; imports core rules and pinned skills
+- `rules/` - markdown rule files loaded via `@` imports in `CLAUDE.md`
+- `skills-lock.json` - skills.sh lock file; tracks installed skills across machines
 
 ## Installation
 
