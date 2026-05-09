@@ -44,7 +44,6 @@ link_target() {
 echo "Setting up ~/.claude/ links..."
 link_target "${REPO_DIR}/CLAUDE.md" "${CLAUDE_DIR}/CLAUDE.md"
 link_target "${REPO_DIR}/rules" "${CLAUDE_DIR}/rules"
-link_target "${REPO_DIR}/commands" "${CLAUDE_DIR}/commands"
 
 echo ""
 echo "Setting up skills..."
