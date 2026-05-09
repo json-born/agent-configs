@@ -1,15 +1,6 @@
 {
   "version": 3,
   "skills": {
-    "terraform-test": {
-      "source": "hashicorp/agent-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/hashicorp/agent-skills.git",
-      "skillPath": "terraform/code-generation/skills/terraform-test/SKILL.md",
-      "skillFolderHash": "e24dc7d3c72d1208736b329434667d43c7bfcfa4",
-      "installedAt": "2026-05-09T22:45:52.955Z",
-      "updatedAt": "2026-05-09T22:45:52.955Z"
-    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
