@@ -10,9 +10,11 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 CLAUDE_DIR="$HOME/.claude"
+AGENTS_DIR="$HOME/.agents"
 FISH_CONFIG="$HOME/.config/fish/config.fish"
 
 mkdir -p "$CLAUDE_DIR"
+mkdir -p "$AGENTS_DIR"
 
 link_target() {
   local target="$1"
@@ -45,22 +47,9 @@ link_target "${REPO_DIR}/rules" "${CLAUDE_DIR}/rules"
 link_target "${REPO_DIR}/commands" "${CLAUDE_DIR}/commands"
 
 echo ""
-echo "Setting up shell aliases..."
-
-add_fish_alias() {
-  local name="$1"
-  local target="$2"
-  local line="alias ${name}='${target}'"
-
-  if grep -qF "$line" "$FISH_CONFIG" 2>/dev/null; then
-    echo "  alias ${name} already set, skipping."
-  else
-    printf '\n%s\n' "$line" >> "$FISH_CONFIG"
-    echo "  Added alias: ${name}"
-  fi
-}
-
-add_fish_alias "claude-skill" "${REPO_DIR}/scripts/claude-skill"
+echo "Setting up skills..."
+link_target "${REPO_DIR}/skills-lock.json" "${AGENTS_DIR}/.skill-lock.json"
 
 echo ""
-echo "Done. Run: source ~/.config/fish/config.fish"
+echo "Done."
+echo "Run: npx skills experimental_install  (to restore skills on a new machine)"

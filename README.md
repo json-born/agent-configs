@@ -6,9 +6,8 @@ My personal Claude Code configuration pack, providing shared rules and commands 
 
 - `CLAUDE.md` — root entry point; imports core rules
 - `rules/` — markdown rule files loaded via `@` imports in `CLAUDE.md`
-- `commands/` — Claude Code slash commands (contents gitignored; install via skill scripts below)
-- `scripts/claude-skill` — unified skill installer with `--registry=` flag
-- `scripts/registries/` — per-registry adapter scripts (anthropic, mattpocock)
+- `commands/` — Claude Code slash commands (contents gitignored; install via [skills.sh](https://skills.sh))
+- `skills-lock.json` — skills.sh lock file; tracks installed skills across machines
 
 ---
 
@@ -22,7 +21,12 @@ Claude Code automatically loads `~/.claude/CLAUDE.md` and discovers slash comman
 git clone <repo-url> ~/.claude
 ```
 
-No further setup needed.
+Then symlink the skills lock file so skills.sh can find it:
+
+```bash
+mkdir -p ~/.agents
+ln -s ~/.claude/skills-lock.json ~/.agents/.skill-lock.json
+```
 
 ### Option B: Clone anywhere, then symlink
 
@@ -31,39 +35,28 @@ If you prefer to keep all your repos in one place (e.g. `~/code/`):
 ```bash
 git clone <repo-url> ~/code/agent-configs
 ~/code/agent-configs/scripts/setup
-source ~/.config/fish/config.fish
 ```
 
-`setup` creates symlinks from `~/.claude/` into the repo and adds a shell alias for `claude-skill`.
+`setup` creates symlinks from `~/.claude/` into the repo and wires up the skills lock file.
 
 ---
 
 ## Installing skills
 
-Slash commands are not committed to this repo — they are installed artifacts. Use the skill scripts to populate `commands/` after cloning.
-
-Both scripts try the Claude Code plugin system first (`claude plugin marketplace add` + `claude plugin install`) and fall back to a direct GitHub download if the plugin system is unavailable.
+Skills are managed via [skills.sh](https://skills.sh). On a new machine, restore all skills from the lock file:
 
 ```bash
-# List available skills
-claude-skill --registry=anthropic list
-claude-skill --registry=mattpocock list   # grouped by category
-
-# Install a skill into commands/
-claude-skill --registry=anthropic add code-review
-claude-skill --registry=mattpocock add tdd
-
-# Remove a skill
-claude-skill --registry=anthropic remove code-review
-claude-skill --registry=mattpocock remove tdd
+npx skills experimental_install
 ```
 
-Or run the scripts directly without the alias:
+To add or remove skills:
 
 ```bash
-./scripts/claude-skill --registry=anthropic list
-./scripts/claude-skill --registry=mattpocock add tdd
+npx skills add <owner/repo>
+npx skills remove <skill-name>
 ```
+
+Because `~/.agents/.skill-lock.json` is symlinked to `skills-lock.json` in this repo, changes are reflected here automatically. Commit when you're happy with the new state.
 
 ---
 
