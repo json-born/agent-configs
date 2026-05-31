@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# setup.sh — Wire this repo into ~/.claude/ and add shell aliases.
+# setup — Wire this repo into ~/.claude/ and ~/.agents/, and register skills as slash commands.
 #
 # For users keeping this repo outside ~/.claude/ (e.g. ~/code/agent-configs/).
 # If you cloned directly to ~/.claude/, this script is not needed.
 #
-# Usage: ./scripts/setup.sh
+# Usage: ./scripts/setup
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 CLAUDE_DIR="$HOME/.claude"
-AGENTS_DIR="$HOME/.agents"
-FISH_CONFIG="$HOME/.config/fish/config.fish"
+AGENTS_DIR="${REPO_DIR}/.agents"
 
 mkdir -p "$CLAUDE_DIR"
 mkdir -p "$AGENTS_DIR"
@@ -46,9 +45,22 @@ link_target "${REPO_DIR}/CLAUDE.md" "${CLAUDE_DIR}/CLAUDE.md"
 link_target "${REPO_DIR}/rules" "${CLAUDE_DIR}/rules"
 
 echo ""
-echo "Setting up skills..."
-link_target "${REPO_DIR}/skills-lock.json" "${AGENTS_DIR}/.skill-lock.json"
+echo "Setting up ~/.agents link..."
+link_target "${AGENTS_DIR}" "$HOME/.agents"
+
+echo ""
+echo "Installing skills..."
+cd "$REPO_DIR" && npx skills experimental_install
+
+echo ""
+echo "Wiring skills as slash commands..."
+mkdir -p "${CLAUDE_DIR}/commands"
+for skill_dir in "${AGENTS_DIR}/skills"/*/; do
+  skill_name="$(basename "$skill_dir")"
+  skill_file="${skill_dir}SKILL.md"
+  [[ -f "$skill_file" ]] || continue
+  link_target "$skill_file" "${CLAUDE_DIR}/commands/${skill_name}.md"
+done
 
 echo ""
 echo "Done."
-echo "Run: npx skills experimental_install  (to restore skills on a new machine)"

@@ -10,39 +10,21 @@ My personal Claude Code configuration pack, providing shared rules and commands 
 
 ## Installation
 
-### Option A: Clone to `~/.claude/` (recommended)
-
-Claude Code automatically loads `~/.claude/CLAUDE.md`.
-
-```bash
-git clone <repo-url> ~/.claude
-```
-
-Then symlink the skills lock file so skills.sh can find it:
-
-```bash
-mkdir -p ~/.agents
-ln -s ~/.claude/skills-lock.json ~/.agents/.skill-lock.json
-npx skills experimental_install
-```
-
-### Option B: Clone anywhere, then symlink
-
-If you prefer to keep all your repos in one place (e.g. `~/code/`):
-
 ```bash
 git clone <repo-url> ~/code/agent-configs
 ~/code/agent-configs/scripts/setup
-npx skills experimental_install
 ```
 
-`setup` creates symlinks from `~/.claude/` into the repo and wires up the skills lock file.
+`setup` wires everything in one shot:
+- Symlinks `~/.claude/CLAUDE.md` and `~/.claude/rules/` into the repo
+- Installs skills into `repo/.agents/skills/` and symlinks `~/.agents` there
+- Registers each skill as a slash command under `~/.claude/commands/`
 
 ---
 
 ## Managing skills
 
-Skills are managed via [skills.sh](https://skills.sh).
+Skills are managed via [skills.sh](https://skills.sh). Run commands from the repo root so `skills-lock.json` is picked up automatically.
 
 ```bash
 npx skills add <owner/repo>
@@ -50,4 +32,4 @@ npx skills remove <skill-name>
 npx skills update
 ```
 
-Because `~/.agents/.skill-lock.json` is symlinked to `skills-lock.json` in this repo, changes are reflected here automatically. Commit when you're happy with the new state.
+Commit `skills-lock.json` when you're happy with the new state. Re-run `scripts/setup` after pulling changes on a new machine.
