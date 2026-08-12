@@ -50,7 +50,8 @@ link_target "${AGENTS_DIR}" "$HOME/.agents"
 
 echo ""
 echo "Installing skills..."
-cd "$REPO_DIR" && npx skills experimental_install
+cd "$REPO_DIR" && npx skills experimental_install > /dev/null
+echo "Skills installed."
 
 echo ""
 echo "Wiring skills as slash commands..."

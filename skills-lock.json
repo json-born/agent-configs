@@ -13,11 +13,23 @@
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
     },
+    "gh-stack": {
+      "source": "github/gh-stack",
+      "sourceType": "github",
+      "skillPath": "skills/gh-stack/SKILL.md",
+      "computedHash": "213d3fe0b3dc87b453912b5a5947fd189a884e4a82ce41fe8ce6c16fb93cd8b3"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/grill-me/SKILL.md",
       "computedHash": "784f0dbb7403b0f00324bce9a112f715342777a0daee7bbb7385f9c6f0a170ea"
+    },
+    "orwell-writing": {
+      "source": "tamdogood/builder-essential-skills",
+      "sourceType": "github",
+      "skillPath": "skills/orwell-writing/SKILL.md",
+      "computedHash": "0d684468fbd5cf8673ca1f0fcb41b6ebb3a74a5f66df1169b9d425ffc085dbe5"
     }
   }
 }
