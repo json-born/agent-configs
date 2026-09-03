@@ -4,3 +4,4 @@
 @rules/core-workflow.md
 @~/.agents/skills/caveman-commit/SKILL.md
 @~/.agents/skills/grill-me/SKILL.md
+@~/.agents/skills/orwell-writing/SKILL.md

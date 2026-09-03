@@ -103,6 +103,12 @@
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "781bd6d3f9b19f8c9af6b53d8d0e4876d0183841b565db34ca7092ffa412d111"
     },
+    "gh-stack": {
+      "source": "github/gh-stack",
+      "sourceType": "github",
+      "skillPath": "skills/gh-stack/SKILL.md",
+      "computedHash": "213d3fe0b3dc87b453912b5a5947fd189a884e4a82ce41fe8ce6c16fb93cd8b3"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -120,6 +126,12 @@
       "sourceType": "github",
       "skillPath": "plugins/expo/skills/native-data-fetching/SKILL.md",
       "computedHash": "b4c14fb97506495f15840ca1ab01b8d57c9a44f47f5b851d49a9c5796cc251d1"
+    },
+    "orwell-writing": {
+      "source": "tamdogood/builder-essential-skills",
+      "sourceType": "github",
+      "skillPath": "skills/orwell-writing/SKILL.md",
+      "computedHash": "0d684468fbd5cf8673ca1f0fcb41b6ebb3a74a5f66df1169b9d425ffc085dbe5"
     },
     "upgrading-expo": {
       "source": "expo/skills",
